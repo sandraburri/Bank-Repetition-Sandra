@@ -3,20 +3,25 @@ package bank;
 import bank.account.Account;
 
 public class Bank {
-
+	
+	// Zeile 11 ist eine Klassenvariable, diese ist für alle Instanzen
+	// gleich => Instanzen = Instanzvariablen siehe Übung 1 Klasse Account
 	// Dies ist eine Konstante, kann nur hier verändert werden
+	// MAX_ACCOUNTS beschreibt die Grösse des Arrays
 	private static final int MAX_ACCOUNTS = 1000;
-
-	// Zeilen 8 und 14 sind Klassenvariablen, diese sind für alle Instanzen
-	// gleich => Instanzen = Instanzvariablen siehe Übung 1
+	
 	// Zu beginn hat es 0 Konten
-	// Zu den Klassenvariablen siehe Postit im Ordner.....
 	private int numAccounts = 0;
 
 	// Zur Verwaltung der Bankkonten dient ein Array [], welcher nur die
 	// MAX_ACCOUNTS enthalten kann
 	// Mittels new Account wird ein Objekt erstellt
 	private Account[] accounts = new Account[MAX_ACCOUNTS];
+	
+	// Die beiden folgenden CodeZeilen sind Klassenvariablen und Konstanten
+	// = 1 und = 2 dienen hier nicht als Mengenangabe sondern als Zuordnung (?)
+	public static final int PERSONAL_ACCOUNT = 1;
+	public static final int SAVINGS_ACCOUNT = 2;
 
 	// Hier braucht es keinen Konstruktor, da diese Klasse auf die importierte
 	// Klasse bank.account.Account zugreift. Falls kein Konstructor erstellt
@@ -24,9 +29,15 @@ public class Bank {
 
 	// Alles was jetzt folgt sind Methoden
 		
-	// Was ist die genaue Beschreibung dieser Methode? Die braucht es, damit
-	// die nachfolgenden Methoden überhaupt ausgeführt werden können. (Keine
-	// Fehlermeldungen ausgeben)
+	// Die Methode gibt den Account mit der entsprechenden Kontonummer zurück.
+	// Anstelle des getters könnte man überall auch direkt auf das accounts[]
+	// array zugreifen. Die Methode ermöglicht aber zukünftig einfachere
+	// Anpassung und ist beliebig erweiterbar, ohne dass man den ganzen Code
+	// überall anpassen muss, wo man einen account abfragen möchte. Bereits
+	// hier überprüft man zusätzlich, ob die Kontonummer überhaupt Sinn macht
+	// (>0 und <numAccounts), hätte man keinen getter, müsste man das ganze
+	// if/else konstrukt überall einfügen, was nicht nur schrecklich aussieht,
+	// sondern auch sehr unpraktisch schreiben ist.
 	private Account getAccount(int nr) {
 		if (nr >= 0 && nr < numAccounts)
 			return accounts[nr];
@@ -35,12 +46,17 @@ public class Bank {
 		}
 	}
 	
-	// Hier wird ein Account eröffnet. Dazu braucht es den Customer und den Pin.
+	// Hier wird ein Account eröffnet. Dazu braucht es den Customer und den Pin
 	// Zuerst wird kontrolliert ob die MAX_ACCOUNTS Zahl nicht überschritten
 	// wird. Falls alles in Ordnung ist, wird die Anzahl Accounts um 1
 	// erhöht, ein neuer Account erstellt und die Account nr zurück gegeben.
-	// ??? Warum Integer und nicht int?
-	public Integer openAccount(String customer, String pin) {
+	// Hier haben wir Integer benutzt, damit wir im Falle, dass keine weiteren
+	// Accounts erstellt werden dürfen (if Bedingung), null zurückgeben können.
+	// int als primitiver Datentyp bietet diese Möglcihkeit nicht, Integer als
+	// Objekt jedoch schon.
+	//
+	// 
+	public Integer openAccount(Integer type, String customer, String pin, double balance) {
 		if (numAccounts >= MAX_ACCOUNTS)
 			return null;
 		Integer nr = numAccounts++;
@@ -53,12 +69,20 @@ public class Bank {
 	// Es wir kontrolliert ob der account exisitiert und der eingegebene pin
 	// gültig ist. Falls ja wird der Kontostand ausgegeben.
 	public Double getBalance(int nr, String pin) {
-		Account account = getAccount(nr); // was genau macht diese Zeile, die
-		// hat es auch in den weiteren Methoden. Bestimmt die das Konto womit
-		// gerade gearbeitet wird?
+		
+		// getAccount(nr) gibt das gewünschte Konto zurück. Dies wird
+		// vorübergehend in der variable "account" gespeichert, damit wir in
+		// den folgenden Zeilen unkompliziert Methoden darauf anwenden können
+		// (zB account.getCheckPIN())
+		Account account = getAccount(nr);
 		if (account != null && account.checkPIN(pin))
-			return account.getBalance(); // Bitte für die Theorie hier erläutern
-		// was mit account.getBalance() genau erreicht wird
+			
+			// Wie oben beschrieben ist in der Variable "account" das
+			// gewünschte Konto gespeichert. Da es sich dabei um ein Objekt vom
+			// Typ "Account" handelt ( Account account = ...), werden die
+			// Methoden aus der Account-Klasse verwendet. account.getBalance()
+			// ruft also die getBalance()-Methode aus der Account Klasse auf.
+			return account.getBalance();
 		else {
 			return null;
 		}
@@ -67,6 +91,10 @@ public class Bank {
 	// Hier wird Geld auf das Konto gelegt. Dazu braucht es die nr und den
 	// Betrag. Es wird überprüft ob das Konto existiert. Falls ja wird der
 	// Betrag welcher einbezahlt wurde ausgegeben.
+	// In diesem Stadium der Übung haben wir noch einen Boolean zurückgegeben,
+	// der aussagt, ob das ein-/auszahlen geklappt hat account.deposit(amount)
+	// => Aufruf der deposit-Methode aus der Account Klasse => Hat als
+	// Rückgabewert Boolean.
 	public boolean deposit(int nr, double amount) {
 		Account account = getAccount(nr);
 		if(account == null)
@@ -74,16 +102,19 @@ public class Bank {
 		return account.deposit(amount);
 	}
 	
-	// Hier wird Geld vom Konto entfernt. Dazu braucht es die nr den pin und den
-	// Betrag. Es wird überprüft ob das Konto existiert und ob der pin korrekt
-	// ist. Falls ja wird der Betrag welcher abgehoben wurde ausgegeben.
+	// Hier wird Geld vom Konto entfernt. Dazu braucht es die nr den pin und
+	// den Betrag. Es wird überprüft ob das Konto existiert und ob der pin
+	// korrekt ist. Falls ja wird der Betrag welcher abgehoben wurde ausgegeben
 	public boolean withdraw (int nr, String pin, double amount) {
 		Account account = getAccount(nr);
 		if (account == null || !account.checkPIN(pin))
 			return false;
-		boolean result = account.withdraw(amount); // warum wird das hier in 2
-		// Zeilen geschrieben? Oben haben wir auch einen boolean und eine
-		// Überprüfung, aber die Ausgabe erfolgt in einer Zeile...
+		
+		// Hier speichern wir den Boolean, der die withdraw-Methode aus der
+		// Account-Klasse zurückgibt zuerst in der Variable "result" und geben
+		// anschliessend den Wert dieser Variable zurück... Könnte man
+		// natürlich auch so machen wie bei deposit.
+		boolean result = account.withdraw(amount);
 		return result;
 	}
 	
@@ -94,8 +125,15 @@ public class Bank {
 		Account account = getAccount(nr);
 		if (account == null || !account.checkPIN(pin))
 			return false;
-		accounts[nr] = null; // Wird hier das Konto auf ungültig gesetzt?
-		return true; // Erfolgt hier die Bestätigung, dass das Konto geschlossen
-		// wurde?
+		
+		// Hier setzten wir das Konto-Objekt auf null. Somit wird es gleich
+		// behandelt, wie wenn ein Konto von der getAccount()-Methode nicht
+		// gefunden wird (gibt auch null zurück).
+		accounts[nr] = null;
+		
+		// Genau wie bei deposit/withdraw haben wir auch hier booleans als
+		// Rückgabewert verwendet, damit wir wissen ob das löschen erfolgreich
+		// war.
+		return true;
 	}
 }

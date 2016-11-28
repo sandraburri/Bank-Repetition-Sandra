@@ -1,6 +1,10 @@
 package bank.account;
 
-public class Account { // Klassenkopf
+// Eine abstrakte Klasse kann nicht instanziert werden. (Aus Wiki Pedia; was
+// bedeutet das hier in diesem Fall? Warum verwenden wir hier diese Klasse als
+// abstrakt, was hat das für Auswirkungen auf die anderen Klassen (Account/
+// PersonalAccount und SavingsAccount)?
+public abstract class Account { // Klassenkopf
 	private String customer; // Instanzvariablen, Attributte, Felder Zeilen 4-6
 	private String pin;
 	private double balance;
@@ -13,10 +17,14 @@ public class Account { // Klassenkopf
 	}
 
 	// Die Methode Account
-	// Warum ist hier in Zeile 19 balance nicht aufgeführt aber ist in Zeile
-	// 20 erforderlich? Diese Methode sagt doch aus, was der Account alles
-	// umfasst?
 	public Account(String customer, String pin) {
+		
+		// Dies ist ein zweiter Konstruktor (Siehe Überladen von Konstruktoren
+		// im Script)! haben wir gemacht, damit man auch Konten eröffnen kann,
+		// ohne ständig einen Startbetrag mitzugeben. "this(customer, pin,
+		// 0.00);" macht dann nichts anderes, als den ersten Konstruktor
+		// aufzurufen, und ihm als balance 0.0 mitzugeben und somit ein Konto
+		// zu erstellen, das noch kein Geld drauf hat.
 		this(customer, pin, 0.00);
 	}
 
@@ -27,7 +35,7 @@ public class Account { // Klassenkopf
 
 	// boolean, ein Pin kann nur korrekt oder falsch sein, das muss überprüft
 	// werden
-	public boolean checkPIN(String pin) { // was bedeutet diese Warnung???
+	public boolean checkPIN(String pin) {
 		if (pin.equals(this.pin))
 			return true;
 		else {
