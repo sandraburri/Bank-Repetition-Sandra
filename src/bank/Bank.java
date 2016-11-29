@@ -1,10 +1,13 @@
+
 package bank;
 
 import bank.account.Account;
+import bank.account.PersonalAccount;
+import bank.account.SavingsAccount;
 
 public class Bank {
 	
-	// Zeile 11 ist eine Klassenvariable, diese ist für alle Instanzen
+	// Zeile 14 ist eine Klassenvariable, diese ist für alle Instanzen
 	// gleich => Instanzen = Instanzvariablen siehe Übung 1 Klasse Account
 	// Dies ist eine Konstante, kann nur hier verändert werden
 	// MAX_ACCOUNTS beschreibt die Grösse des Arrays
@@ -19,7 +22,8 @@ public class Bank {
 	private Account[] accounts = new Account[MAX_ACCOUNTS];
 	
 	// Die beiden folgenden CodeZeilen sind Klassenvariablen und Konstanten
-	// = 1 und = 2 dienen hier nicht als Mengenangabe sondern als Zuordnung (?)
+	// = 1 und = 2 dienen hier nicht als Mengenangabe sondern als Zuordnung
+	// = 1 und = 2 definieren den type für die Methode openAccount
 	public static final int PERSONAL_ACCOUNT = 1;
 	public static final int SAVINGS_ACCOUNT = 2;
 
@@ -55,12 +59,23 @@ public class Bank {
 	// int als primitiver Datentyp bietet diese Möglcihkeit nicht, Integer als
 	// Objekt jedoch schon.
 	//
-	// 
+	// Die Methode wird so ergänzt, dass der Konten type und die balance
+	// überprüft werden können (Integer type, double balance)
 	public Integer openAccount(Integer type, String customer, String pin, double balance) {
 		if (numAccounts >= MAX_ACCOUNTS)
 			return null;
 		Integer nr = numAccounts++;
-		Account account = new Account(customer, pin);
+		
+		// Account account; ist ein Objekt vom Typ Account mit dem Namen
+		// Account
+		Account account;
+				
+				// type wird überprüft... siehe ganz Oben wo der definiert wird
+				if (type == PERSONAL_ACCOUNT)
+			account = new PersonalAccount(customer,  pin, balance);
+		else {
+			account = new SavingsAccount(customer, pin, balance);
+		}
 		accounts[nr] = account;
 		return nr;
 	}

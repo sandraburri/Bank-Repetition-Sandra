@@ -1,15 +1,18 @@
 package bank.account;
 
-// Eine abstrakte Klasse kann nicht instanziert werden. (Aus Wiki Pedia; was
-// bedeutet das hier in diesem Fall? Warum verwenden wir hier diese Klasse als
-// abstrakt, was hat das für Auswirkungen auf die anderen Klassen (Account/
-// PersonalAccount und SavingsAccount)?
+// Eine abstrakte Klasse kann nicht instanziert werden.
+// Das machen wir, weil wir keine reinen Accounts mehr haben wollen. Wir wollen
+// nur noch PersonalAccounts und SavingsAccounts haben, das heisst wir
+// instanzieren nur noch diese Beiden...
 public abstract class Account { // Klassenkopf
-	private String customer; // Instanzvariablen, Attributte, Felder Zeilen 4-6
+	private String customer; // Instanzvariablen, Attributte, Felder Zeilen
+	// 8-13
 	private String pin;
-	private double balance;
+	
+	// protected, weil private nicht vererbt werden kann
+	protected double balance;
 
-	// Konstruktor der Klasse Account Zeilen 8-12
+	// Konstruktor der Klasse Account Zeilen 16-19
 	public Account(String customer, String pin, double balance) {
 		this.customer = customer;
 		this.pin = pin;

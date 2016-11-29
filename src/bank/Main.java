@@ -10,7 +10,7 @@ public class Main {
 		// Es wird ein neues Objekt ATM erzeugt
 		ATM atm = new ATM(bank);
 		
-		// was passiert hier genau?
+		// führt die run Methode aus, bringt den ATM zum laufen
 		atm.run();
 	}
 }

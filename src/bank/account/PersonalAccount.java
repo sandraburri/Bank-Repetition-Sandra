@@ -6,14 +6,14 @@ package bank.account;
 // erweitert
 public class PersonalAccount extends Account {
 	
-	// Das ist die Methode PersonalAccount mit ihren Attributen()
+	// Das ist der Konstruktor von PersonalAccount
 	public PersonalAccount(String customer, String pin, double balance) {
 		
 		// Die Attribute werden in der super Klasse Account abgeholt
 		super(customer, pin, balance);
 	}
 
-	// Die Methode PersonalAccount
+	// Das ist der Konstruktor von PersonalAccount
 	public PersonalAccount(String customer, String pin) {
 		
 		// Dies ist ein zweiter Konstruktor (Siehe Überladen von Konstruktoren

@@ -5,13 +5,12 @@ import java.util.Scanner;
 @SuppressWarnings("nls")
 public class ATM {
 
-	// Wie sagt man dem und was macht das? Kann das nicht einordnen.
-	// Ist von mir aus kein Konstruktor, keine Variable und es wird auch kein
-	// Objekt erzeugt
+	// Dies ist ein Objekt vom Typ Bank mit dem Namen bank, ist eine Instanz-
+	// variable
 	private Bank bank;
 
-	// Ist das der Konstruktor des ATM? Steht in der () das Bank wie ein int /
-	// String .... ?
+	// Das ist der Konstruktor des ATM. Anstatt ein (String customer) geben wir
+	// hier (Bank bank) mit
 	public ATM(Bank bank) {
 		this.bank = bank;
 	}
@@ -20,16 +19,16 @@ public class ATM {
 	// braucht man um mit dem Kunden zu interagieren
 	private Scanner scanner;
 
-	// Was bedeutet das? Es bringt etwas zum laufen, aber wie genau und was?
-	// => Erklärung bei Bestellung Pizza auch noch ergänzen
+	// Diese Methode bringt das Programm mit run zum laufen, regelt die Ein-
+	// und Ausgabe, das was der Kunde sieht und dort wo er eingeben kann...
 	public void run() {
 		
 		// Die while Schleife wird durchlaufen solange der Benutzer Eingaben
 		// tätigt oder abbricht (Exit)
 		while (true) {
 			
-			// Bei der Bestellung im Pizzakurier war von einem Loop die Rede.
-			// Von wo bis wo geht hier der Loop und wie funktioniert der hier?
+			// Der while Loop ist hier immer true. Das heisst so lange der
+			// Kunde etwas eingibt läuft es immer weiter, bis zum (Exit)
 			
 			// Die folgenden 14 Zeilen sind Ausgaben auf der Konsole, sprich
 			// für den Kunden ersichtlich Text aber auch Leerzeilen
@@ -50,7 +49,7 @@ public class ATM {
 			
 			// ein neues Objekt wird erzeugt mit = new Scanner(System.in) ,
 			// wird während der Erstellung des Scanner Objekts automatisch
-			// instanziert => Erklärung bei Bestellung Pizza auch noch ergänzen
+			// instanziert
 			scanner = new Scanner(System.in);
 			
 			// Das Programm wartet auf die Eingabe des Buchstabens UND Enter,
@@ -81,7 +80,8 @@ public class ATM {
 									System.exit(0);
 									break;
 									
-									// default = alle nicht behandelten Fälle (nicht A,B,C,D,E,X)
+									// default = alle nicht behandelten Fälle
+									// (nicht A,B,C,D,E,X)
 									default:
 										
 										// Ausgabe bei einem Eingabe Fehler
@@ -99,9 +99,7 @@ public class ATM {
 
 	// Ab hier folgen die Methoden, damit das was der Kunde sieht und er ein-
 	// gibt überhaupt durchgeführt werden kann und auch korrekt funktioniert...
-	// Warum passiert das erst hier? Wäre es nicht logischer zuerst das Werk-
-	// zeug zu produzieren und dann erst mit dem Kunden zu interagieren?
-
+	
 	// In dieser Methode wird der Account eröffnet
 	private void openAccount() {
 
@@ -118,7 +116,6 @@ public class ATM {
 		// Hier wird dem neuen Bankkonto eine nr vergeben. Die notwendigen
 		// Informationen dazu werden bei der Klasse Bank bei openAccount
 		// abgeholt.
-		// Warum wird hier das Int als Integer geschrieben?
 		Integer nr = bank.openAccount(customer, pin);
 
 		// Wenn die Nummer gültig ist. In unserem Fall, wenn die Nummer die
@@ -135,21 +132,19 @@ public class ATM {
 
 		// Der Kunde wird mit dieser Ausgabe aufgefordert seine Kontonummer
 		// einzugeben
-		System.out.println("Account Nr: "); // warum hat der Dozent hier in
-		// seinem Beispiel print und nicht println? Ist das von Bedeutung?
+		System.out.println("Account Nr: ");
 
-		// Was wird hier mit dem parse genau erreicht/gemacht und warum?
-		// Die Kontonummer ist doch bereits ein int und keinen String?
+		// Das Parsen fährt durch einen Text und sucht die gewünschten Sachen
+		// heraus. In unserem Fall ist ein Int gesucht
 		int nr = Integer.parseInt(scanner.nextLine());
 		System.out.println("PIN: ");
 		String pin = scanner.nextLine();
 
-		// Warum ist hier Double gross geschrieben?
+		// Double ist hier ein Objekt und kein primitiver Datentyp
 		Double balance = bank.getBalance(nr, pin);
 
-		// Wenn der Kontostand gültig ist, sprich nicht negativ ist (oder zielt
-		// das hier auf die Kundeneingabe ab? Sprich korrekte Kontonummer
-		// und korrekter pin?)
+		// Hier wird überprüft ob die Balance überhaupt existiert. Falls nein
+		// ist die Kontonummer oder der Pin falsch...
 		if (balance != null)
 			System.out.println("Balance of Account with number " + nr + " is " + balance);
 		else
@@ -162,7 +157,8 @@ public class ATM {
 		System.out.println("Account Nr: ");
 		int nr = Integer.parseInt(scanner.nextLine());
 
-		// ??
+		// Das Parsen fährt durch einen Text und sucht die gewünschten Sachen
+		// heraus. In unserem Fall ist ein double gesucht
 		double amount = Double.parseDouble(scanner.nextLine());
 
 		// richtig oder falsch Infos dazu werden in der Klasse Bank bei deposit

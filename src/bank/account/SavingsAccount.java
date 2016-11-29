@@ -6,20 +6,20 @@ package bank.account;
 //erweitert
 public class SavingsAccount extends Account {
 	
-	// Zeile 11 ist eine Klassenvariable, diese ist für alle Instanzen
+	// Zeile 13 ist eine Klassenvariable, diese ist für alle Instanzen
 	// gleich => Instanzen = Instanzvariablen siehe Übung 1 Klasse Account
 	// Dies ist eine Konstante, kann nur hier verändert werden
-	// WITHDRAW_LIMIT beschreibt die Grösse des Arrays
+	// WITHDRAW_LIMIT beschreibt das Rückzugslimit, hier 5000
 	public static final double WITHDRAW_LIMIT = 5000;
 	
-	// Das ist die Methode SavingsAccount mit ihren Attributen()
+	// Das ist ein Konstruktor von SavingsAccount
 	public SavingsAccount(String customer, String pin, double balance) {
 		
 		// Die Attribute werden in der super Klasse Account abgeholt
 		super(customer, pin, balance);
 	}
 
-	// Die Methode SavingsAccount
+	// Das ist ein Konstruktor von SavingsAccount
 	public SavingsAccount(String customer, String pin) {
 		
 		// Dies ist ein zweiter Konstruktor (Siehe Überladen von Konstruktoren
