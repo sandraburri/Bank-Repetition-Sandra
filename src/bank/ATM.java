@@ -15,8 +15,8 @@ public class ATM {
 		this.bank = bank;
 	}
 
-	// Dieser Befehl löst den Import des Scanner aus (Zeile 3). Den Scanner
-	// braucht man um mit dem Kunden zu interagieren
+	// Dieser Befehl löst den Import des Scanner aus (Zeile 3)
+	// Wird benötigt um Texteingaben zu interpretieren
 	private Scanner scanner;
 
 	// Diese Methode bringt das Programm mit run zum laufen, regelt die Ein-
@@ -93,15 +93,27 @@ public class ATM {
 			System.out.println("Hite Enter to continue...");
 			
 			// Der Scanner gibt dann die entsprechende nächste Zeile aus
+			// Die Eingabe wird hier nicht wie bei choice (Zeile 63) in einer
+			// Variable gespeichert, stattdessen warten wir einfach nur auf den
+			// nextLine Befehl (sprich "Enter")
 			scanner.nextLine();
 		}
 	}
 
 	// Ab hier folgen die Methoden, damit das was der Kunde sieht und er ein-
 	// gibt überhaupt durchgeführt werden kann und auch korrekt funktioniert...
+	// Ergänzung: In jedem switch-case wird die entsprechende Methode
+	// aufgerufen
+	// Hier ist nun definiert, was diese Methode genau tut
 	
 	// In dieser Methode wird der Account eröffnet
 	private void openAccount() {
+		
+		// Der Kunde wird hier aufgefordert den Konten Type zu wählen
+		System.out.print("Type (Personal/Savings: ");
+		int type = Bank.PERSONAL_ACCOUNT;
+		if (scanner.nextLine().toUpperCase().equals("S"))
+			type = Bank.SAVINGS_ACCOUNT;
 
 		// Der Kunde wird mit dieser Ausgabe aufgefordert seinen Namen
 		// einzugeben
@@ -109,18 +121,24 @@ public class ATM {
 
 		// Wenn der Kunde seinen Namen eingegeben hat, geht der scanner auf die
 		// nächste Zeile
+		// Genauer: Speichert die Eingabe (eine Zeile) im String "customer" ab
 		String customer = scanner.nextLine();
 		System.out.println("PIN: ");
 		String pin = scanner.nextLine();
-
+		
+		// Der Anfangskontostand wird hier vom Kunden eingegeben
+		System.out.print("Start balance: ");
+		double balance = Double.parseDouble(scanner.nextLine());
+		
 		// Hier wird dem neuen Bankkonto eine nr vergeben. Die notwendigen
 		// Informationen dazu werden bei der Klasse Bank bei openAccount
 		// abgeholt.
-		Integer nr = bank.openAccount(customer, pin);
+		Integer nr = bank.openAccount(type, customer, pin, balance);
 
 		// Wenn die Nummer gültig ist. In unserem Fall, wenn die Nummer die
 		// MAX_ACCOUNTS nicht überschreitet und der Kunde alles korrekt ein-
 		// gegeben hat
+		// => bank.openAccount gibt einen Integer zurück (return Wert)
 		if (nr != null)
 			System.out.println("Account with number " + nr + " opened");
 		else
@@ -146,7 +164,8 @@ public class ATM {
 		// Hier wird überprüft ob die Balance überhaupt existiert. Falls nein
 		// ist die Kontonummer oder der Pin falsch...
 		if (balance != null)
-			System.out.println("Balance of Account with number " + nr + " is " + balance);
+			System.out.println("Balance of Account with number " + nr + " is "
+		    + balance);
 		else
 			System.out.println("Wrong Accountnumber or pin");
 	}
@@ -156,6 +175,7 @@ public class ATM {
 	private void deposit() {
 		System.out.println("Account Nr: ");
 		int nr = Integer.parseInt(scanner.nextLine());
+		System.out.println("Amount: ");		
 
 		// Das Parsen fährt durch einen Text und sucht die gewünschten Sachen
 		// heraus. In unserem Fall ist ein double gesucht
@@ -180,7 +200,7 @@ public class ATM {
 		System.out.println("Amount: ");
 		double amount = Double.parseDouble(scanner.nextLine());
 		boolean withdraw = bank.withdraw(nr, pin, amount);
-		if (withdraw = true)
+		if (withdraw == true)
 			System.out.println("Withdraw of " + amount + " from account with number " + nr);
 		else
 			System.out.println("Wrong Accountnumber or pin");

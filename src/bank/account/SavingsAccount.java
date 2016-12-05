@@ -15,7 +15,8 @@ public class SavingsAccount extends Account {
 	// Das ist ein Konstruktor von SavingsAccount
 	public SavingsAccount(String customer, String pin, double balance) {
 		
-		// Die Attribute werden in der super Klasse Account abgeholt
+		// Genauer: Ruft den Konstruktor der super-Klasse auf ->
+		// Die Attribute werden so in der super Klasse Account abgeholt
 		super(customer, pin, balance);
 	}
 
