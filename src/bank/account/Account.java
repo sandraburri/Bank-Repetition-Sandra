@@ -1,18 +1,26 @@
 package bank.account;
 
+import bank.Printable;
+
 // Eine abstrakte Klasse kann nicht instanziert werden.
 // Das machen wir, weil wir keine reinen Accounts mehr haben wollen. Wir wollen
 // nur noch PersonalAccounts und SavingsAccounts haben, das heisst wir
 // instanzieren nur noch diese Beiden...
-public abstract class Account { // Klassenkopf
-	private String customer; // Instanzvariablen, Attributte, Felder Zeilen
-	// 8-13
+
+// implements Printable implementiert das Interface Printable
+// Die einzig direkte Auswirkung hier ist, dass mindestens entweder hier in der
+// abstrakten Klasse, oder in beiden konkreten Subklassen print() implementiert
+// werden muss. (Kannst ja mal ausprobieren, was passiert, wenn du die Methode
+// hier und in einer Subklasse auskommentierst - Eclipse wird dich aufforden
+// die print-Methode zu implementieren, da das Interface das so verlangt)
+public abstract class Account implements Printable { // Klassenkopf
+	private String customer; 
 	private String pin;
 	
 	// protected, weil private nicht vererbt werden kann
 	protected double balance;
 
-	// Konstruktor der Klasse Account Zeilen 16-19
+	// Konstruktor der Klasse Account
 	public Account(String customer, String pin, double balance) {
 		this.customer = customer;
 		this.pin = pin;
@@ -62,5 +70,14 @@ public abstract class Account { // Klassenkopf
 		return false;
 		this.balance = this.balance - amount;
 		return true;
+	}
+	
+	@Override
+	
+	// Die Methode print wird überschrieben, damit sie unseren Anforderungen
+	// entspricht
+	public void print() {
+		System.out.println("Customer: " + this.getCustomer());
+		System.out.println("Balance: " + this.getBalance());
 	}
 }

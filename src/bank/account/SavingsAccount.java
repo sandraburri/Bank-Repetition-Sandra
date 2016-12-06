@@ -46,4 +46,14 @@ public class SavingsAccount extends Account {
 		// Methode der super Klasse Account durchgeführt werden
 		return super.withdraw(amount);
 	}
+	
+	@Override
+	public void print() {
+		System.out.println("Type Savings Account");
+		
+		// greift auf die Klasse Account zu und dort auf die in @Override
+		// ausführlich definierten 2 Zeilen zu... Somit haben wir hier
+		// 3 Zeilen die ausgegeben werden
+		super.print();
+	}
 }
