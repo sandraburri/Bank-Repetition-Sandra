@@ -37,14 +37,14 @@ public class SavingsAccount extends Account {
 	// Überschreibt die Methode withdraw aus der Klasse Account insofern, dass
 	// neu noch der Kontostand (darf nicht negativ werden) und das
 	// WITHDRAW_LIMIT überprüft werden müssen
-	public boolean withdraw (double amount) {
-		if (amount > balance || amount > WITHDRAW_LIMIT)
-			return false;
-		
-		// Falls amount nicht grösser ist als die Balance und amount das oben
-		// definierte WITHDRAW_LIMIT nicht übersteigt, kann die withdraw
-		// Methode der super Klasse Account durchgeführt werden
-		return super.withdraw(amount);
+	//
+	// Boolean entfällt.
+		public void withdraw (double amount) throws TransactionException {
+		if (amount > balance)
+			throw new TransactionException("Der Betrag ist grösser als das Guthaben");
+		if(amount > WITHDRAW_LIMIT)
+			throw new TransactionException("Der Betrag übersteigt die Limite");
+		super.withdraw(amount);
 	}
 	
 	@Override

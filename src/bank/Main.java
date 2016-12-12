@@ -1,8 +1,10 @@
 package bank;
 
+import bank.account.CredentialsException;
+
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CredentialsException {
 
 		// Es wird ein neues Objekt Bank erzeugt
 		Bank bank = new Bank();

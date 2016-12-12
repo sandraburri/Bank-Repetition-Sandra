@@ -1,8 +1,11 @@
 package bank;
 
 import bank.account.Account;
+import bank.account.AccountType;
+import bank.account.CredentialsException;
 import bank.account.PersonalAccount;
 import bank.account.SavingsAccount;
+import bank.account.TransactionException;
 
 public class Bank {
 
@@ -12,7 +15,7 @@ public class Bank {
 	// MAX_ACCOUNTS beschreibt die Grösse des Arrays
 	private static final int MAX_ACCOUNTS = 1000;
 
-	// Zu beginn hat es 0 Konten
+	// Zu Beginn hat es 0 Konten
 	private int numAccounts = 0;
 
 	// Zur Verwaltung der Bankkonten dient ein Array [], welcher nur die
@@ -20,11 +23,8 @@ public class Bank {
 	// Mittels new Account wird ein Objekt erstellt
 	private Account[] accounts = new Account[MAX_ACCOUNTS];
 
-	// Die beiden folgenden CodeZeilen sind Klassenvariablen und Konstanten
-	// = 1 und = 2 dienen hier nicht als Mengenangabe sondern als Zuordnung
-	// = 1 und = 2 definieren den type für die Methode openAccount
-	public static final int PERSONAL_ACCOUNT = 1;
-	public static final int SAVINGS_ACCOUNT = 2;
+	// Hier konnten 2 CodeZeilen entfernt werden, da dies nun über den Enum
+	// AccountType geregelt wird
 
 	// Hier braucht es keinen Konstruktor, da diese Klasse auf die importierte
 	// Klasse bank.account.Account zugreift. Falls kein Konstructor erstellt
@@ -41,13 +41,14 @@ public class Bank {
 	// (>0 und < numAccounts), hätte man keinen getter, müsste man das ganze
 	// if/else konstrukt überall einfügen, was nicht nur schrecklich aussieht,
 	// sondern auch sehr unpraktisch zu schreiben ist.
-	private Account getAccount(int nr) {
-		if (nr >= 0 && nr < numAccounts)
-			return accounts[nr];
-		else {
-			return null;
+	private Account getAccount(int nr) throws CredentialsException {
+		if (nr < 0 || nr >= numAccounts)
+			throw new CredentialsException("Ungültige Kontonummer");
+		Account account = accounts[nr];
+		if (account == null)
+			throw new CredentialsException("Wrong Account");
+		return account;
 		}
-	}
 
 	// Hier wird ein Account eröffnet. Dazu braucht es den Customer und den Pin
 	// Zuerst wird kontrolliert ob die MAX_ACCOUNTS Zahl nicht überschritten
@@ -60,7 +61,9 @@ public class Bank {
 	//
 	// Die Methode wird so ergänzt, dass der Konten type und die balance
 	// überprüft werden können (Integer type, double balance)
-	public Integer openAccount(Integer type, String customer, String pin,
+	//
+	// Neu wird nun der type via den Enum AccountType überprüft
+	public Integer openAccount(AccountType type, String customer, String pin,
 			double balance) {
 		if (numAccounts >= MAX_ACCOUNTS)
 			return null;
@@ -71,36 +74,40 @@ public class Bank {
 		Account account;
 
 		// type wird überprüft... siehe ganz Oben wo der definiert wird
-		if (type == PERSONAL_ACCOUNT)
+		if (type == AccountType.PERSONAL)
 			account = new PersonalAccount(customer, pin, balance);
 		else {
 			account = new SavingsAccount(customer, pin, balance);
 		}
-		accounts[nr] = account;
+		try {
+			accounts[nr] = account;
+		}
+		catch (RuntimeException e) {
+		}
+
 		return nr;
 	}
 
 	// Hier wird das Konto ausgeglichen. Dazu braucht es die nr und den pin.
 	// Es wir kontrolliert ob der account exisitiert und der eingegebene pin
 	// gültig ist. Falls ja wird der Kontostand ausgegeben.
-	public Double getBalance(int nr, String pin) {
+	public Double getBalance(int nr, String pin) throws CredentialsException {
 
 		// getAccount(nr) gibt das gewünschte Konto zurück. Dies wird
 		// vorübergehend in der variable "account" gespeichert, damit wir in
 		// den folgenden Zeilen unkompliziert Methoden darauf anwenden können
 		// (zB account.getCheckPIN())
 		Account account = getAccount(nr);
-		if (account != null && account.checkPIN(pin))
+		account.checkPIN(pin);
+		if (account == null)
+			throw new CredentialsException("Wrong Account");
 
-			// Wie oben beschrieben ist in der Variable "account" das
-			// gewünschte Konto gespeichert. Da es sich dabei um ein Objekt vom
-			// Typ "Account" handelt ( Account account = ...), werden die
-			// Methoden aus der Account-Klasse verwendet. account.getBalance()
-			// ruft also die getBalance()-Methode aus der Account Klasse auf.
-			return account.getBalance();
-		else {
-			return null;
-		}
+		// Wie oben beschrieben ist in der Variable "account" das
+		// gewünschte Konto gespeichert. Da es sich dabei um ein Objekt vom
+		// Typ "Account" handelt ( Account account = ...), werden die
+		// Methoden aus der Account-Klasse verwendet. account.getBalance()
+		// ruft also die getBalance()-Methode aus der Account Klasse auf.
+		return account.getBalance();
 	}
 
 	// Hier wird Geld auf das Konto gelegt. Dazu braucht es die nr und den
@@ -110,46 +117,35 @@ public class Bank {
 	// der aussagt, ob das ein-/auszahlen geklappt hat account.deposit(amount)
 	// => Aufruf der deposit-Methode aus der Account Klasse => Hat als
 	// Rückgabewert Boolean.
-	public boolean deposit(int nr, double amount) {
+	public void deposit(int nr, double amount) throws CredentialsException,
+	TransactionException {
 		Account account = getAccount(nr);
 		if (account == null)
-			return false;
-		return account.deposit(amount);
+			throw new CredentialsException("Wrong Account");
+		account.deposit(amount);
 	}
 
 	// Hier wird Geld vom Konto entfernt. Dazu braucht es die nr den pin und
 	// den Betrag. Es wird überprüft ob das Konto existiert und ob der pin
 	// korrekt ist. Falls ja wird der Betrag welcher abgehoben wurde ausgegeben
-	public boolean withdraw(int nr, String pin, double amount) {
+	public void withdraw(int nr, String pin, double amount) throws
+	CredentialsException, TransactionException{
 		Account account = getAccount(nr);
-		if (account == null || !account.checkPIN(pin))
-			return false;
-
-		// Hier speichern wir den Boolean, der die withdraw-Methode aus der
-		// Account-Klasse zurückgibt zuerst in der Variable "result" und geben
-		// anschliessend den Wert dieser Variable zurück... Könnte man
-		// natürlich auch so machen wie bei deposit.
-		boolean result = account.withdraw(amount);
-		return result;
+		account.checkPIN(pin);
+		if (account == null)
+			throw new CredentialsException("Account existiert nicht");
+			account.withdraw(amount);
 	}
 
 	// Hier wird das Konto geschlossen. Dazu braucht es die nr und den pin.
 	// Es wird überprüft ob das Konto existiert und ob der pin korrekt
 	// ist. Falls ja wird das Konto geschlossen.
-	public boolean closeAccount(int nr, String pin) {
+	public void closeAccount(int nr, String pin) throws CredentialsException {
 		Account account = getAccount(nr);
-		if (account == null || !account.checkPIN(pin))
-			return false;
-
-		// Hier setzten wir das Konto-Objekt auf null. Somit wird es gleich
-		// behandelt, wie wenn ein Konto von der getAccount()-Methode nicht
-		// gefunden wird (gibt auch null zurück).
-		accounts[nr] = null;
-
-		// Genau wie bei deposit/withdraw haben wir auch hier booleans als
-		// Rückgabewert verwendet, damit wir wissen ob das löschen erfolgreich
-		// war.
-		return true;
+		account.checkPIN(pin);
+		if (account == null)
+			throw new CredentialsException("Wrong Account");
+			accounts [nr] = null;
 	}
 
 	// Gibt sämtliche existierende Bankkonten aus
@@ -162,7 +158,7 @@ public class Bank {
 	// Methode der Superklasse auf) Geschlossene Konten sollten nicht
 	// aufgelistet werden, da diese "null" sind und dadurch das if-statement
 	// nicht erfüllt ist
-	public void printAccounts() {
+	public void printAccounts() throws CredentialsException {
 
 		// count Zählt von 0 bis zur maximalen Anzahl Konten, nach jedem
 		// Durchlauf wird es um 1 erhöht

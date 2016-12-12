@@ -14,9 +14,9 @@ import bank.Printable;
 // hier und in einer Subklasse auskommentierst - Eclipse wird dich aufforden
 // die print-Methode zu implementieren, da das Interface das so verlangt)
 public abstract class Account implements Printable { // Klassenkopf
-	private String customer; 
+	private String customer;
 	private String pin;
-	
+
 	// protected, weil private nicht vererbt werden kann
 	protected double balance;
 
@@ -29,7 +29,7 @@ public abstract class Account implements Printable { // Klassenkopf
 
 	// Die Methode Account
 	public Account(String customer, String pin) {
-		
+
 		// Dies ist ein zweiter Konstruktor (Siehe Überladen von Konstruktoren
 		// im Script)! haben wir gemacht, damit man auch Konten eröffnen kann,
 		// ohne ständig einen Startbetrag mitzugeben. "this(customer, pin,
@@ -44,36 +44,37 @@ public abstract class Account implements Printable { // Klassenkopf
 		return customer;
 	}
 
-	// boolean, ein Pin kann nur korrekt oder falsch sein, das muss überprüft
-	// werden
-	public boolean checkPIN(String pin) {
+	// Der boolean entfällt hier. Wir arbeiten nun mit Exceptions. Wenn ein
+	// Fehler eintritt, wird eine Exception geworfen, ansonsten wird der
+	// Ablauf normal fortgesetzt. Eine Exception bedeutet immer einen
+	// Unterbruch des gewöhlichen Ablaufs
+	public void checkPIN(String pin) throws CredentialsException {
 		if (pin.equals(this.pin))
-			return true;
-		else {
-			return false;
-		}
+			throw new CredentialsException("Invalide PIN");
 	}
 
 	public double getBalance() {
 		return balance;
 	}
 
-	public boolean deposit(double amount) {
+	// Boolean entfällt. Dass der Betrag dem Kontostand hinzugefügt wird
+	// schreiben wir nur noch balance += amount;
+	public void deposit(double amount) throws TransactionException {
 		if (amount < 0)
-			return false;
-		this.balance = this.balance + amount;
-		return true;
+			throw new TransactionException("Invalide Sume");
+		balance += amount;
 	}
 
-	public boolean withdraw (double amount) {
+	// Boolean entfällt. Dass der Betrag vom Kontostand abgezogen wird
+	// schreiben wir nur noch balance -= amount;
+	public void withdraw(double amount) throws TransactionException {
 		if (amount < 0)
-		return false;
-		this.balance = this.balance - amount;
-		return true;
+			throw new TransactionException("Invalide Sume");
+		balance -= amount;
 	}
-	
+
 	@Override
-	
+
 	// Die Methode print wird überschrieben, damit sie unseren Anforderungen
 	// entspricht
 	public void print() {

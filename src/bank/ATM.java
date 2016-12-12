@@ -1,6 +1,9 @@
 package bank;
 
 import java.util.Scanner;
+import bank.account.AccountType;
+import bank.account.CredentialsException;
+import bank.account.TransactionException;
 
 @SuppressWarnings("nls")
 public class ATM {
@@ -76,10 +79,12 @@ public class ATM {
 				closeAccount();
 				break;
 			case "X":
-
-				// greift auf die Bankklasse zu und der Code in der Methode
-				// printAccounts() von dort wird ausgeführt
-				bank.printAccounts();
+				try {
+					bank.printAccounts();
+				}
+				catch (CredentialsException e) {
+					System.err.println(e.getMessage());
+				}
 				System.exit(0);
 				break;
 
@@ -113,9 +118,14 @@ public class ATM {
 
 		// Der Kunde wird hier aufgefordert den Konten Type zu wählen
 		System.out.print("Type (Personal/Savings: ");
-		int type = Bank.PERSONAL_ACCOUNT;
+
+		// // Neu wird nun der type via den Enum AccountType überprüft
+		AccountType type = AccountType.PERSONAL;
 		if (scanner.nextLine().toUpperCase().equals("S"))
-			type = Bank.SAVINGS_ACCOUNT;
+
+			// AccountType type = Das muss nicht noch einmal so definiert
+			// werden, dies ist bereits in Zeile 119 geschehen
+			type = AccountType.SAVINGS;
 
 		// Der Kunde wird mit dieser Ausgabe aufgefordert seinen Namen
 		// einzugeben
@@ -159,17 +169,16 @@ public class ATM {
 		int nr = Integer.parseInt(scanner.nextLine());
 		System.out.println("PIN: ");
 		String pin = scanner.nextLine();
+		try {
 
-		// Double ist hier ein Objekt und kein primitiver Datentyp
-		Double balance = bank.getBalance(nr, pin);
-
-		// Hier wird überprüft ob die Balance überhaupt existiert. Falls nein
-		// ist die Kontonummer oder der Pin falsch...
-		if (balance != null)
+			// Double ist hier ein Objekt und kein primitiver Datentyp
+			Double balance = bank.getBalance(nr, pin);
 			System.out.println("Balance of Account with number " + nr + " is "
-		+ balance);
-		else
-			System.out.println("Wrong Accountnumber or pin");
+			+ balance);
+		}
+		catch (CredentialsException e) {
+			System.err.println(e.getMessage());
+		}
 	}
 
 	// Mit dieser Methode wird ermöglicht, dass der Kunde Geld auf sein
@@ -182,14 +191,13 @@ public class ATM {
 		// Das Parsen fährt durch einen Text und sucht die gewünschten Sachen
 		// heraus. In unserem Fall ist ein double gesucht
 		double amount = Double.parseDouble(scanner.nextLine());
-
-		// richtig oder falsch Infos dazu werden in der Klasse Bank bei deposit
-		// abgeholt
-		boolean deposit = bank.deposit(nr, amount);
-		if (deposit == true)
+		try {
+			bank.deposit(nr, amount);
 			System.out.println("Deposit of " + amount + " to account with number " + nr);
-		else
-			System.out.println("Deposit failed");
+		}
+		catch (CredentialsException | TransactionException e) {
+			System.err.println(e.getMessage());
+		}
 	}
 
 	// Mit dieser Methode wird ermöglicht, dass der Kunde Geld von seinem Konto
@@ -201,11 +209,16 @@ public class ATM {
 		String pin = scanner.nextLine();
 		System.out.println("Amount: ");
 		double amount = Double.parseDouble(scanner.nextLine());
-		boolean withdraw = bank.withdraw(nr, pin, amount);
-		if (withdraw == true)
+		try {
+			bank.withdraw(nr, pin, amount);
 			System.out.println("Withdraw of " + amount + " from account with number " + nr);
-		else
-			System.out.println("Wrong Accountnumber or pin");
+		}
+		catch (CredentialsException e) {
+			System.err.println(e.getMessage());
+		}
+		catch (TransactionException e) {
+			System.err.println(e.getMessage());
+		}
 	}
 
 	// Diese Methode ermöglicht es, ein Konto zu schliessen
@@ -214,10 +227,12 @@ public class ATM {
 		int nr = Integer.parseInt(scanner.nextLine());
 		System.out.println("PIN: ");
 		String pin = scanner.nextLine();
-		boolean closeAccount = bank.closeAccount(nr, pin);
-		if (closeAccount == true)
+		try {
+			bank.closeAccount(nr, pin);
 			System.out.println("Account with number " + nr + " closed");
-		else
-			System.out.println("Wrong Accountnumber or pin");
+		}
+		catch (CredentialsException e) {
+			System.err.println(e.getMessage());
+		}
 	}
 }
