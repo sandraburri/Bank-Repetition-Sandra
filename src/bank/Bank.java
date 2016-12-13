@@ -1,5 +1,7 @@
 package bank;
 
+import java.util.HashMap;
+import java.util.Map;
 import bank.account.Account;
 import bank.account.AccountType;
 import bank.account.CredentialsException;
@@ -9,19 +11,17 @@ import bank.account.TransactionException;
 
 public class Bank {
 
-	// Zeile 13 ist eine Klassenvariable, diese ist für alle Instanzen
-	// gleich => Instanzen = Instanzvariablen siehe Übung 1 Klasse Account
-	// Dies ist eine Konstante, kann nur hier verändert werden
-	// MAX_ACCOUNTS beschreibt die Grösse des Arrays
-	private static final int MAX_ACCOUNTS = 1000;
+	// private static final int MAX_ACCOUNTS = 1000; können wir löschen da wir
+	// ab jetzt mit einer Map arbeiten
 
 	// Zu Beginn hat es 0 Konten
 	private int numAccounts = 0;
 
-	// Zur Verwaltung der Bankkonten dient ein Array [], welcher nur die
-	// MAX_ACCOUNTS enthalten kann
-	// Mittels new Account wird ein Objekt erstellt
-	private Account[] accounts = new Account[MAX_ACCOUNTS];
+	// private Account[] accounts = new Account[MAX_ACCOUNTS]; wird
+	// umgeschrieben von einem Array in eine Map
+
+	// So erstellt man eine Map mit bereits existierenden Argumenten
+	Map<Integer, Account> accounts = new HashMap<Integer, Account>();
 
 	// Hier konnten 2 CodeZeilen entfernt werden, da dies nun über den Enum
 	// AccountType geregelt wird
@@ -44,11 +44,14 @@ public class Bank {
 	private Account getAccount(int nr) throws CredentialsException {
 		if (nr < 0 || nr >= numAccounts)
 			throw new CredentialsException("Ungültige Kontonummer");
-		Account account = accounts[nr];
+		
+		// Der neu erstellte account wird in der Map abgelegt und erhält eine
+		// nr
+		Account account = accounts.get(nr);
 		if (account == null)
 			throw new CredentialsException("Wrong Account");
 		return account;
-		}
+	}
 
 	// Hier wird ein Account eröffnet. Dazu braucht es den Customer und den Pin
 	// Zuerst wird kontrolliert ob die MAX_ACCOUNTS Zahl nicht überschritten
@@ -65,8 +68,10 @@ public class Bank {
 	// Neu wird nun der type via den Enum AccountType überprüft
 	public Integer openAccount(AccountType type, String customer, String pin,
 			double balance) {
-		if (numAccounts >= MAX_ACCOUNTS)
-			return null;
+		
+		// if (numAccounts >= MAX_ACCOUNTS) braucht es nicht mehr
+		// return null; braucht es nicht mehr
+		
 		Integer nr = numAccounts++;
 
 		// Account account; ist ein Objekt vom Typ Account mit dem Namen
@@ -79,9 +84,20 @@ public class Bank {
 		else {
 			account = new SavingsAccount(customer, pin, balance);
 		}
+
+		// So wird eine unchecked Exception geschrieben, hier wird keine
+		// Exception geworfen. Das Programm beendet nicht gleich sondern läuft
+		// noch weiter
 		try {
-			accounts[nr] = account;
+
+			// Der neue account wird im Array abgespeichert, falls hier ein
+			// Fehler passiert wird gecatcht, falls alles gut geht geht es
+			// weiter im Code, hier mit return nr
+			accounts.put(nr, account);
 		}
+
+		// Das ist der Fehler der abgefangen wird, durch das läuft das Programm
+		// weiter
 		catch (RuntimeException e) {
 		}
 
@@ -129,12 +145,12 @@ public class Bank {
 	// den Betrag. Es wird überprüft ob das Konto existiert und ob der pin
 	// korrekt ist. Falls ja wird der Betrag welcher abgehoben wurde ausgegeben
 	public void withdraw(int nr, String pin, double amount) throws
-	CredentialsException, TransactionException{
+	CredentialsException, TransactionException {
 		Account account = getAccount(nr);
 		account.checkPIN(pin);
 		if (account == null)
 			throw new CredentialsException("Account existiert nicht");
-			account.withdraw(amount);
+		account.withdraw(amount);
 	}
 
 	// Hier wird das Konto geschlossen. Dazu braucht es die nr und den pin.
@@ -145,7 +161,12 @@ public class Bank {
 		account.checkPIN(pin);
 		if (account == null)
 			throw new CredentialsException("Wrong Account");
-			accounts [nr] = null;
+		
+		// accounts [nr] = null; wird von String in Map umgeschrieben
+		
+		// In einer Map wird eine Nummer entfernt und nicht als ungültig
+		// erklärt
+		accounts.remove(nr);
 	}
 
 	// Gibt sämtliche existierende Bankkonten aus
@@ -160,9 +181,9 @@ public class Bank {
 	// nicht erfüllt ist
 	public void printAccounts() throws CredentialsException {
 
-		// count Zählt von 0 bis zur maximalen Anzahl Konten, nach jedem
-		// Durchlauf wird es um 1 erhöht
-		for (int count = 0; count <= MAX_ACCOUNTS; count++) {
+		// count Zählt von 0 sämtliche Konten durch, nach jedem Durchlauf wird
+		// es um 1 erhöht
+		for (int count = 0; count <= numAccounts; count++) {
 
 			// Ist ein Konto nicht "null" wird der Befehl in der Folgezeile
 			// (oder innerhalb {}) ausgeführt

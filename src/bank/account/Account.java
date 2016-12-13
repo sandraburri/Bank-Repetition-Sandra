@@ -1,5 +1,7 @@
 package bank.account;
 
+import java.util.ArrayList;
+import java.util.List;
 import bank.Printable;
 
 // Eine abstrakte Klasse kann nicht instanziert werden.
@@ -16,6 +18,7 @@ import bank.Printable;
 public abstract class Account implements Printable { // Klassenkopf
 	private String customer;
 	private String pin;
+	private List<Transaction> transactions = new ArrayList<Transaction>();
 
 	// protected, weil private nicht vererbt werden kann
 	protected double balance;
@@ -48,8 +51,14 @@ public abstract class Account implements Printable { // Klassenkopf
 	// Fehler eintritt, wird eine Exception geworfen, ansonsten wird der
 	// Ablauf normal fortgesetzt. Eine Exception bedeutet immer einen
 	// Unterbruch des gewöhlichen Ablaufs
+	// throws CredentialsException meldet, dass hier eventuell eine
+	// entsprechende Exception geworfen werden muss
 	public void checkPIN(String pin) throws CredentialsException {
-		if (pin.equals(this.pin))
+		
+		// Überprüft den eingegebenen Pin mit dem hinterlegten Pin
+		if (!pin.equals(this.pin))
+			
+			// Falls der Pin falsch ist, wird diese Fehlermeldung geworfen
 			throw new CredentialsException("Invalide PIN");
 	}
 
@@ -63,6 +72,8 @@ public abstract class Account implements Printable { // Klassenkopf
 		if (amount < 0)
 			throw new TransactionException("Invalide Sume");
 		balance += amount;
+		Transaction transaction = new Transaction(amount, balance);
+		transactions.add(transaction);
 	}
 
 	// Boolean entfällt. Dass der Betrag vom Kontostand abgezogen wird
@@ -71,6 +82,8 @@ public abstract class Account implements Printable { // Klassenkopf
 		if (amount < 0)
 			throw new TransactionException("Invalide Sume");
 		balance -= amount;
+		Transaction transaction = new Transaction(amount, balance);
+		transactions.add(transaction);
 	}
 
 	@Override

@@ -83,6 +83,10 @@ public class ATM {
 					bank.printAccounts();
 				}
 				catch (CredentialsException e) {
+					
+					// Hier wird die Fehlermeldung ausgegeben. Die
+					// Fehlermeldung haben wir zuvor mit throw...("....")
+					// am entsprechenden Ort definiert
 					System.err.println(e.getMessage());
 				}
 				System.exit(0);
