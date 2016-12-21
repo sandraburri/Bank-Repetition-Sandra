@@ -1,8 +1,11 @@
 package bank;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 import bank.account.AccountType;
 import bank.account.CredentialsException;
+import bank.account.Transaction;
 import bank.account.TransactionException;
 
 @SuppressWarnings("nls")
@@ -42,9 +45,10 @@ public class ATM {
 			System.out.println();
 			System.out.println("A  Open Account");
 			System.out.println("B  Get Balance");
-			System.out.println("C  Deposit");
-			System.out.println("D  Withdraw");
-			System.out.println("E  Close Account");
+			System.out.println("C  Get Transaction");
+			System.out.println("D  Deposit");
+			System.out.println("E  Withdraw");
+			System.out.println("F  Close Account");
 			System.out.println("X  Exit");
 			System.out.println();
 			System.out.print("> ");
@@ -70,20 +74,22 @@ public class ATM {
 				getBalance();
 				break;
 			case "C":
-				deposit();
+				getTransactions();
 				break;
 			case "D":
-				withdraw();
+				deposit();
 				break;
 			case "E":
+				withdraw();
+				break;
+			case "F":
 				closeAccount();
 				break;
 			case "X":
 				try {
 					bank.printAccounts();
-				}
-				catch (CredentialsException e) {
-					
+				} catch (CredentialsException e) {
+
 					// Hier wird die Fehlermeldung ausgegeben. Die
 					// Fehlermeldung haben wir zuvor mit throw...("....")
 					// am entsprechenden Ort definiert
@@ -179,8 +185,30 @@ public class ATM {
 			Double balance = bank.getBalance(nr, pin);
 			System.out.println("Balance of Account with number " + nr + " is "
 			+ balance);
+		} catch (CredentialsException e) {
+			System.err.println(e.getMessage());
 		}
-		catch (CredentialsException e) {
+	}
+
+	// Hier wird die Liste sämtlicher Transactionen vom betroffenen Konto
+	// ausgegeben
+	private void getTransactions() {
+		System.out.print("Account Nr: ");
+		int nr = Integer.parseInt(scanner.nextLine());
+		System.out.print("PIN: ");
+		String pin = scanner.nextLine();
+		System.out.println("Transactions of account with number " + nr);
+		try {
+			List<Transaction> transactions = bank.getTransactions(nr, pin);
+			for (int i = 0; i < transactions.size(); i++) {
+				Transaction transaction = transactions.get(i);
+				double amount = transaction.getAmount();
+				double balance = transaction.getBalance();
+				Date valuta = transaction.getValuta();
+				System.out.print("Date: " + valuta + "\n Amount: " + amount +
+						"\n New balance is: " + balance + "\n");
+			}
+		} catch (CredentialsException e) {
 			System.err.println(e.getMessage());
 		}
 	}
@@ -198,8 +226,7 @@ public class ATM {
 		try {
 			bank.deposit(nr, amount);
 			System.out.println("Deposit of " + amount + " to account with number " + nr);
-		}
-		catch (CredentialsException | TransactionException e) {
+		} catch (CredentialsException | TransactionException e) {
 			System.err.println(e.getMessage());
 		}
 	}
@@ -216,11 +243,9 @@ public class ATM {
 		try {
 			bank.withdraw(nr, pin, amount);
 			System.out.println("Withdraw of " + amount + " from account with number " + nr);
-		}
-		catch (CredentialsException e) {
+		} catch (CredentialsException e) {
 			System.err.println(e.getMessage());
-		}
-		catch (TransactionException e) {
+		} catch (TransactionException e) {
 			System.err.println(e.getMessage());
 		}
 	}
@@ -234,8 +259,7 @@ public class ATM {
 		try {
 			bank.closeAccount(nr, pin);
 			System.out.println("Account with number " + nr + " closed");
-		}
-		catch (CredentialsException e) {
+		} catch (CredentialsException e) {
 			System.err.println(e.getMessage());
 		}
 	}

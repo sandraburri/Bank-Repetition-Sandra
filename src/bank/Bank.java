@@ -1,15 +1,30 @@
 package bank;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import bank.account.Account;
 import bank.account.AccountType;
 import bank.account.CredentialsException;
 import bank.account.PersonalAccount;
 import bank.account.SavingsAccount;
+import bank.account.Transaction;
 import bank.account.TransactionException;
 
-public class Bank {
+public class Bank implements Serializable {
+	
+	// Es wird eine DB_FILE erstellt, dies stellt die Datei dar, in welche
+	// wir alle Bankdaten und deren Anzahl abspeichern
+	// Muss zwingend als erstes stehen, denn es muss auch als erstes gelesen
+	// werden
+	private static final String DB_FILE = "Datei";
 
 	// private static final int MAX_ACCOUNTS = 1000; können wir löschen da wir
 	// ab jetzt mit einer Map arbeiten
@@ -22,7 +37,7 @@ public class Bank {
 
 	// So erstellt man eine Map mit bereits existierenden Argumenten
 	Map<Integer, Account> accounts = new HashMap<Integer, Account>();
-
+	
 	// Hier konnten 2 CodeZeilen entfernt werden, da dies nun über den Enum
 	// AccountType geregelt wird
 
@@ -45,8 +60,9 @@ public class Bank {
 		if (nr < 0 || nr >= numAccounts)
 			throw new CredentialsException("Ungültige Kontonummer");
 		
-		// Der neu erstellte account wird in der Map abgelegt und erhält eine
-		// nr
+		// Der beim Schlüssel mit Nummer "nr" abgespeicherte Wert (vom Typ
+		// "Account") wird in der Variable namens "account" gespeichert
+		// (welcher natürlich auch vom Typ "Account" ist)
 		Account account = accounts.get(nr);
 		if (account == null)
 			throw new CredentialsException("Wrong Account");
@@ -93,6 +109,9 @@ public class Bank {
 			// Der neue account wird im Array abgespeichert, falls hier ein
 			// Fehler passiert wird gecatcht, falls alles gut geht geht es
 			// weiter im Code, hier mit return nr
+			//
+			// Neu nicht mehr im Array, sondern in der Map, an der Position
+			// mit Schlüssel "nr"
 			accounts.put(nr, account);
 		}
 
@@ -195,5 +214,46 @@ public class Bank {
 				// Informationen zum Konto als "println" in der Konsole aus
 				getAccount(count).print();
 		}
+	}
+	
+	// saveData und loadData müssen wir noch besprechen, diese Zeilen sind für
+	// mich noch sehr rätselhaft....
+	
+	private void saveData() {
+		try {
+			ObjectOutputStream out = new ObjectOutputStream(new
+					FileOutputStream(DB_FILE));
+			out.writeObject(this);
+			out.close();
+		}
+		catch (IOException e) {
+			System.err.println("Daten konnten nicht gesichert werden" +
+		e.getMessage());
+		}
+	}
+	
+	private void loadData() {
+		try {
+			ObjectInputStream in = new ObjectInputStream(new
+					FileInputStream(DB_FILE));
+			Bank bank = (Bank) in.readObject();
+			in.close();
+			this.numAccounts = bank.numAccounts;
+			this.accounts = bank.accounts;
+		}
+		catch (Exception e) {
+			System.err.println("Daten konnten nicht geladen werden" +
+		e.getMessage());
+		}
+	}
+	
+	// Gibt eine Liste zurück mit allen Transaktionen die auf diesem Konten
+	// statt gefunden haben wenn die Nummer und der Pin korrekt eingegeben
+	// wurden
+	public List<Transaction> getTransactions(int nr, String pin) throws
+	CredentialsException {
+		Account account = getAccount(nr);
+		account.checkPIN(pin);
+		return account.getTransactions();
 	}
 }

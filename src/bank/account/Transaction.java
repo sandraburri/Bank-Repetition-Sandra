@@ -1,15 +1,19 @@
 package bank.account;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-public class Transaction {
+public class Transaction implements Serializable {
 	
 	// Instanzvariablen
 	private double amount; // Betrag
 	private double balance; // Kontostand
-	private Date valuta; // valuta = Geschäftsabschluss ??? was hat das mit dem
-	// Datum zu tun
+	
+	// Das Datum (und Zeit) zu welchem die Transaktion gemacht wurde. Wir
+	// können dafür die Klasse "Date" aus java.util brauchen (zusammen mit
+	// Calendar, damit es für uns leserlich ist - tag,monat,jahr,...)
+	private Date valuta;
 	
 	// Konstruktor
 	public Transaction(double amount, double balance) {

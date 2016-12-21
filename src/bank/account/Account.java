@@ -1,5 +1,6 @@
 package bank.account;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import bank.Printable;
@@ -15,9 +16,18 @@ import bank.Printable;
 // werden muss. (Kannst ja mal ausprobieren, was passiert, wenn du die Methode
 // hier und in einer Subklasse auskommentierst - Eclipse wird dich aufforden
 // die print-Methode zu implementieren, da das Interface das so verlangt)
-public abstract class Account implements Printable { // Klassenkopf
+//
+// Wird von Java schon fixfertig zur Verfügung gestellt, da müssen wir nix mehr
+// schreiben
+public abstract class Account implements Printable, Serializable{ // Klassenkopf
 	private String customer;
 	private String pin;
+	
+	// Hier wird die Liste von Transaktionen erstellt. Dabei handelt es sich um
+	// eine Instanzvariable, d.h. jeder Account hat seine eigene Liste an
+	// Transaktionen, die auf dem Konto getätigt wurden. In den Methoden
+	// deposit und withdraw werden dementsprechend neue Transaktionen erstellt
+	// und zur Liste hinzugefügt
 	private List<Transaction> transactions = new ArrayList<Transaction>();
 
 	// protected, weil private nicht vererbt werden kann
@@ -84,6 +94,11 @@ public abstract class Account implements Printable { // Klassenkopf
 		balance -= amount;
 		Transaction transaction = new Transaction(amount, balance);
 		transactions.add(transaction);
+	}
+	
+	// Die erstellte Transaction Liste wird hier ausgegeben
+	public List<Transaction> getTransactions() {
+		return this.transactions;
 	}
 
 	@Override
