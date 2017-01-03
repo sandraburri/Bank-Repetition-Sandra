@@ -100,6 +100,10 @@ public abstract class Account implements Printable, Serializable{ // Klassenkopf
 	public List<Transaction> getTransactions() {
 		return this.transactions;
 	}
+	
+	// Ist eine Schnittstelle und gilt einheitlich für alle abgeleiteten
+	// Klassen
+	public abstract double getInterestRate();
 
 	@Override
 

@@ -6,6 +6,9 @@ package bank.account;
 // erweitert
 public class PersonalAccount extends Account {
 	
+	// Hier wird der Zinssatz definiert
+	private static final double INTEREST_RATE = 0.023;
+	
 	// Das ist der Konstruktor von PersonalAccount
 	public PersonalAccount(String customer, String pin, double balance) {
 		
@@ -24,6 +27,12 @@ public class PersonalAccount extends Account {
 		// aufzurufen, und ihm als balance 0.0 mitzugeben und somit ein Konto
 		// zu erstellen, das noch kein Geld drauf hat.
 		this(customer, pin, 0.0);
+	}
+	
+	// Hier greift die Account Klasse zu und die Interestrate wird dann
+	// zurückgegeben, mittels oben definiertem Satz
+	public double getInterestRate() {
+		return INTEREST_RATE;
 	}
 	
 	@Override

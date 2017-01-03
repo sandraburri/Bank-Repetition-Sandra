@@ -11,6 +11,7 @@ public class SavingsAccount extends Account {
 	// Dies ist eine Konstante, kann nur hier verändert werden
 	// WITHDRAW_LIMIT beschreibt das Rückzugslimit, hier 5000
 	public static final double WITHDRAW_LIMIT = 5000;
+	public static final double INTEREST_RATE = 0.045;
 	
 	// Das ist ein Konstruktor von SavingsAccount
 	public SavingsAccount(String customer, String pin, double balance) {
@@ -45,6 +46,10 @@ public class SavingsAccount extends Account {
 		if(amount > WITHDRAW_LIMIT)
 			throw new TransactionException("Der Betrag übersteigt die Limite");
 		super.withdraw(amount);
+	}
+	
+	public double getInterestRate() {
+		return INTEREST_RATE;
 	}
 	
 	@Override

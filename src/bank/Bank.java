@@ -1,5 +1,6 @@
 package bank;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,10 +21,7 @@ import bank.account.TransactionException;
 
 public class Bank implements Serializable {
 	
-	// Es wird eine DB_FILE erstellt, dies stellt die Datei dar, in welche
-	// wir alle Bankdaten und deren Anzahl abspeichern
-	// Muss zwingend als erstes stehen, denn es muss auch als erstes gelesen
-	// werden
+	// Es wird ein String erstellt, mit dem Namen Datei
 	private static final String DB_FILE = "Datei";
 
 	// private static final int MAX_ACCOUNTS = 1000; können wir löschen da wir
@@ -36,14 +34,27 @@ public class Bank implements Serializable {
 	// umgeschrieben von einem Array in eine Map
 
 	// So erstellt man eine Map mit bereits existierenden Argumenten
-	Map<Integer, Account> accounts = new HashMap<Integer, Account>();
+	private Map<Integer, Account> accounts = new HashMap<Integer, Account>();
 	
 	// Hier konnten 2 CodeZeilen entfernt werden, da dies nun über den Enum
 	// AccountType geregelt wird
 
-	// Hier braucht es keinen Konstruktor, da diese Klasse auf die importierte
-	// Klasse bank.account.Account zugreift. Falls kein Konstructor erstellt
-	// wird, macht JAVA selber einen, dieser kann jedoch wirr sein...
+	// Wir erstellen einen Konstruktor um die Bankdaten zu laden
+	public Bank() {
+		File newBank = new File(DB_FILE);
+		if (newBank.exists())
+			loadData();
+		else {
+			try {
+				newBank.createNewFile();
+			}
+			catch (IOException e) {
+				System.err.println("Fehler beim erstellen der Datei " +
+			e.getMessage());
+			}
+		}
+		
+	}
 
 	// Alles was jetzt folgt sind Methoden
 
@@ -119,7 +130,9 @@ public class Bank implements Serializable {
 		// weiter
 		catch (RuntimeException e) {
 		}
-
+		
+		// Hier werden die Bankdaten gespeichert
+		saveData();
 		return nr;
 	}
 
@@ -158,6 +171,7 @@ public class Bank implements Serializable {
 		if (account == null)
 			throw new CredentialsException("Wrong Account");
 		account.deposit(amount);
+		saveData();
 	}
 
 	// Hier wird Geld vom Konto entfernt. Dazu braucht es die nr den pin und
@@ -170,6 +184,7 @@ public class Bank implements Serializable {
 		if (account == null)
 			throw new CredentialsException("Account existiert nicht");
 		account.withdraw(amount);
+		saveData();
 	}
 
 	// Hier wird das Konto geschlossen. Dazu braucht es die nr und den pin.
@@ -186,6 +201,7 @@ public class Bank implements Serializable {
 		// In einer Map wird eine Nummer entfernt und nicht als ungültig
 		// erklärt
 		accounts.remove(nr);
+		saveData();
 	}
 
 	// Gibt sämtliche existierende Bankkonten aus
@@ -216,14 +232,17 @@ public class Bank implements Serializable {
 		}
 	}
 	
-	// saveData und loadData müssen wir noch besprechen, diese Zeilen sind für
-	// mich noch sehr rätselhaft....
-	
 	private void saveData() {
 		try {
+			
+			// In Form eines DB-Files mit dem Namen Datei
 			ObjectOutputStream out = new ObjectOutputStream(new
 					FileOutputStream(DB_FILE));
+			
+			// Schreibt die ganze Klasse in die Datei Namens Datei
 			out.writeObject(this);
+			
+			// Streams müssen immer geschlossen werden
 			out.close();
 		}
 		catch (IOException e) {
@@ -234,8 +253,13 @@ public class Bank implements Serializable {
 	
 	private void loadData() {
 		try {
+			
+			// Liest die ganze Klasse von der Datei Namens Datei
 			ObjectInputStream in = new ObjectInputStream(new
 					FileInputStream(DB_FILE));
+			
+			// Liest die Datei aus und speichert die Daten in einer Variable
+			// Namens Bank
 			Bank bank = (Bank) in.readObject();
 			in.close();
 			this.numAccounts = bank.numAccounts;
